@@ -1,0 +1,9 @@
+project: captain-codeman
+service: auth
+version: 20161120
+runtime: go
+api_version: go1
+
+handlers:
+- url: /.*
+  script: _go_app
