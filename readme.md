@@ -25,9 +25,15 @@ really losing what makes bearer tokens so valuable - having a JWT that authorize
 the request without having to keep track of server-side sessions, so you can scale
 your API.
 
-So now you need to jump through a few hoops and will need a server to both verify 
-auth tokens passed to it (for, you know, security) before correctly produce your
-own signed custom tokens that firebase will accept.
+You might also want some custom claims to be available in the JWT so that you can
+[decode it on the client](https://github.com/auth0/jwt-decode) and adapt the UI to
+match the user's roles for example.
+
+OK, so you need custom tokens.
+
+Now you need to jump through a few hoops and will need a server to both verify the 
+firebase issued auth tokens passed to it (for, you know, security) before correctly
+producing your own signed custom tokens that firebase will accept for authentication.
 
 This is what this library does.
 
