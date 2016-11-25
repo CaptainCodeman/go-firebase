@@ -15,6 +15,31 @@ var HTTPClient ContextKey
 // because nobody else can create a ContextKey, being unexported.
 type ContextKey struct{}
 
+// RequestContextFunc is a func which tries to return a context.Context
+// given a Request value. If it returns an error, the search stops
+// with that error.  If it returns (nil, nil), the search continues
+// down the list of registered funcs.
+type RequestContextFunc func(*http.Request) (context.Context, error)
+
+var requestContextFuncs []RequestContextFunc
+
+func RegisterRequestContextFunc(fn RequestContextFunc) {
+	requestContextFuncs = append(requestContextFuncs, fn)
+}
+
+func RequestContext(req *http.Request) (context.Context, error) {
+	for _, fn := range requestContextFuncs {
+		ctx, err := fn(req)
+		if err != nil {
+			return nil, err
+		}
+		if ctx != nil {
+			return ctx, nil
+		}
+	}
+	return context.Background(), nil
+}
+
 // ContextClientFunc is a func which tries to return an *http.Client
 // given a Context value. If it returns an error, the search stops
 // with that error.  If it returns (nil, nil), the search continues
