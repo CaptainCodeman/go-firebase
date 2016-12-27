@@ -5,10 +5,11 @@ import (
 	"net/http"
 
 	"github.com/rs/cors"
+	"golang.org/x/net/context"
 )
 
 type (
-	CreateClaimsFunc func(*Token) *Claims
+	CreateClaimsFunc func(context.Context, *Token) (*Claims, error)
 
 	Server struct {
 		auth     *Auth
@@ -58,7 +59,11 @@ func (s *Server) generateHandler(w http.ResponseWriter, r *http.Request) {
 	userID, _ := token.UID()
 
 	// call the app-provided function to generate custom claims
-	claims := s.claimsFn(token)
+	claims, err := s.claimsFn(ctx, token)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	// mint a custom token
 	tokenString, err := s.auth.CreateCustomToken(userID, claims)

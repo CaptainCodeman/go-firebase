@@ -1,11 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"net/http"
 
-	"encoding/json"
 	"github.com/captaincodeman/go-firebase"
 	"github.com/rs/cors"
+	"golang.org/x/net/context"
 )
 
 var auth *firebase.Auth
@@ -28,7 +29,7 @@ func init() {
 	http.Handle("/api", c.Handler(auth.AnyRole(http.HandlerFunc(apiHandler), "operator")))
 }
 
-func customClaims(token *firebase.Token) *firebase.Claims {
+func customClaims(ctx context.Context, token *firebase.Token) (*firebase.Claims, error) {
 	// get the firebase user id for lookup
 	// userID, _ := token.UID()
 
@@ -40,7 +41,7 @@ func customClaims(token *firebase.Token) *firebase.Claims {
 		"operator",
 	}
 
-	return &claims
+	return &claims, nil
 }
 
 func apiHandler(w http.ResponseWriter, r *http.Request) {

@@ -141,6 +141,9 @@ file is not included and you should instead include one created from your own pr
 
 ## Client example
 
-I'm using [Polymer](https://www.polymer-project.org/) for my front-end. I've added
-some extra custom elements to make auth-token handling easier and also add the JWT
-to AJAX requests (via `iron-ajax`) which I will try and release at some point.
+I'm using [Polymer](https://www.polymer-project.org/) for my front-end and have created
+an [`<auth-ajax>`](https://github.com/CaptainCodeman/auth-ajax) element to make auth-token
+handling easier.
+
+See the [demo](http://www.captaincodeman.com/auth-ajax/components/auth-ajax/demo/) which
+uses an instance of this package for the server-side custom token issuing.
