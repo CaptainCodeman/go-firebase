@@ -12,24 +12,66 @@ type (
 	CreateClaimsFunc func(context.Context, *Token) (*Claims, error)
 
 	Server struct {
-		auth     *Auth
-		claimsFn CreateClaimsFunc
+		auth           *Auth
+		claimsFn       CreateClaimsFunc
+		generateURI    string
+		verifyURI      string
+		allowedOrigins []string
 	}
 )
 
-func (a *Auth) Server(claimsFn CreateClaimsFunc) http.Handler {
+// ServerGenerateURI Sets URI for the token generation
+func ServerGenerateURI(uri string) func(*Server) {
+	return func(s *Server) {
+		s.generateURI = uri
+	}
+}
+
+// ServerVerifyURI Sets URI for token verification
+func ServerVerifyURI(uri string) func(*Server) {
+	return func(s *Server) {
+		s.verifyURI = uri
+	}
+}
+
+// ServerAllowedOrigins sets AllowedOrigins for CORS
+func ServerAllowedOrigins(origins []string) func(*Server) {
+	return func(s *Server) {
+		s.allowedOrigins = origins
+	}
+}
+
+func (a *Auth) Server(claimsFn CreateClaimsFunc, options ...func(*Server)) http.Handler {
 	s := &Server{
 		auth:     a,
 		claimsFn: claimsFn,
 	}
 
+	for _, option := range options {
+		option(s)
+	}
+
+	// Setting defaults if empty
+	if len(s.generateURI) == 0 {
+		s.generateURI = "/token"
+	}
+
+	if len(s.verifyURI) == 0 {
+		s.verifyURI = "/verify"
+	}
+
+	if len(s.allowedOrigins) == 0 {
+		s.allowedOrigins = []string{"*"}
+	}
+
 	// endpoints to issue and verify tokens
 	m := http.NewServeMux()
-	m.HandleFunc("/token", s.generateHandler)
-	m.HandleFunc("/verify", s.verifyHandler)
+
+	m.HandleFunc(s.generateURI, s.generateHandler)
+	m.HandleFunc(s.verifyURI, s.verifyHandler)
 
 	c := cors.New(cors.Options{
-		AllowedOrigins: []string{"*"}, // TODO: pass in as parameter to restrict?
+		AllowedOrigins: s.allowedOrigins,
 		AllowedHeaders: []string{"Authorization"},
 	})
 
