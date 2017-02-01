@@ -21,9 +21,9 @@ func init() {
 		// Custom AllowedOrigins
 		firebase.ServerAllowedOrigins([]string{"*"}),
 		// Custom URI for verifyHandler
-		firebase.ServerVerifyURI("/customVerify"),
+		firebase.ServerVerifyURI("/verify"),
 		// Custom URI for generateHandler
-		firebase.ServerGenerateURI("/customGenerate")))
+		firebase.ServerGenerateURI("/token")))
 
 	// but we need to add it for the API endpoint
 	c := cors.New(cors.Options{
