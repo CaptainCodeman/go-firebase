@@ -17,7 +17,13 @@ func init() {
 	auth = fb.Auth()
 
 	// auth server comes with CORS included
-	http.Handle("/", auth.Server(customClaims))
+	http.Handle("/", auth.Server(customClaims,
+		// Custom AllowedOrigins
+		firebase.ServerAllowedOrigins([]string{"*"}),
+		// Custom URI for verifyHandler
+		firebase.ServerVerifyURI("/customVerify"),
+		// Custom URI for generateHandler
+		firebase.ServerGenerateURI("/customGenerate")))
 
 	// but we need to add it for the API endpoint
 	c := cors.New(cors.Options{
