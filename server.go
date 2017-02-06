@@ -17,8 +17,16 @@ type (
 		generateURI    string
 		verifyURI      string
 		allowedOrigins []string
+		serveMux       *http.ServeMux
 	}
 )
+
+// ServerServeMux Uses the existing ServeMux
+func ServerServeMux(m *http.ServeMux) func(*Server) {
+	return func(s *Server) {
+		s.serveMux = m
+	}
+}
 
 // ServerGenerateURI Sets URI for the token generation
 func ServerGenerateURI(uri string) func(*Server) {
@@ -66,6 +74,9 @@ func (a *Auth) Server(claimsFn CreateClaimsFunc, options ...func(*Server)) http.
 
 	// endpoints to issue and verify tokens
 	m := http.NewServeMux()
+	if s.serveMux != nil {
+		m = s.serveMux
+	}
 
 	m.HandleFunc(s.generateURI, s.generateHandler)
 	m.HandleFunc(s.verifyURI, s.verifyHandler)
@@ -137,3 +148,4 @@ func (s *Server) verifyHandler(w http.ResponseWriter, r *http.Request) {
 	enc := json.NewEncoder(w)
 	enc.Encode(token.Claims())
 }
+
