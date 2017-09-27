@@ -4,6 +4,9 @@ AppEngine friendly Firebase for Go (Golang)
 
 Currently just the auth pieces to verify and mint custom tokens.
 
+UPDATE: There is now an [Official Firebase Admin Go SDK](https://github.com/firebase/firebase-admin-go)
+which is recommended instead of this package.
+
 ## Why another package?
 
 There are a few existing firebase packages for Go but none of them seemed to work 
