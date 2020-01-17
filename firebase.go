@@ -1,4 +1,4 @@
-package firebase // import "github.com/captaincodeman/go-firebase"
+package firebase
 
 import (
 	"fmt"
